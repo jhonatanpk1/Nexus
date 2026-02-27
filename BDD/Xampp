@@ -1,0 +1,375 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 13-11-2025 a las 08:00:16
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `agencia_viajes`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clientes`
+--
+
+CREATE TABLE `clientes` (
+  `id_cliente` bigint(20) UNSIGNED NOT NULL,
+  `nombre` varchar(255) DEFAULT NULL,
+  `apellido` varchar(255) DEFAULT NULL,
+  `tipo_documento` varchar(255) DEFAULT NULL,
+  `numero_documento` varchar(255) DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `correo_electronico` varchar(255) DEFAULT NULL,
+  `telefono` varchar(255) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `fecha_registro` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `itinerarios`
+--
+
+CREATE TABLE `itinerarios` (
+  `id_itinerario` int(11) UNSIGNED NOT NULL,
+  `id_viaje` bigint(20) UNSIGNED NOT NULL,
+  `dia` int(11) UNSIGNED NOT NULL,
+  `descripcion` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pagos`
+--
+
+CREATE TABLE `pagos` (
+  `id_pago` bigint(20) NOT NULL,
+  `id_reserva` bigint(20) UNSIGNED NOT NULL,
+  `fecha_pago` timestamp NOT NULL DEFAULT current_timestamp(),
+  `monto` decimal(10,2) NOT NULL,
+  `tipo_pago` enum('Efectivo','Tarjeta_de_Crédito','Tarjeta_de_Débito','Transferencia') DEFAULT 'Efectivo',
+  `numero_tarjeta` varchar(20) DEFAULT NULL,
+  `fecha_expiracion` varchar(10) DEFAULT NULL,
+  `cvv` varchar(5) DEFAULT NULL,
+  `referencia` varchar(100) DEFAULT NULL,
+  `estado_pago` enum('Pendiente','Aprobado','Rechazado') NOT NULL DEFAULT 'Pendiente',
+  `observaciones` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `piloto`
+--
+
+CREATE TABLE `piloto` (
+  `id_piloto` bigint(20) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `id_vuelo` bigint(20) DEFAULT NULL,
+  `id_viaje` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `piloto`
+--
+
+INSERT INTO `piloto` (`id_piloto`, `apellido`, `nombre`, `id_vuelo`, `id_viaje`) VALUES
+(1, 'Lewis ', 'Hamilton', 1, NULL),
+(2, 'Schumacher', 'Michael ', NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `reservas`
+--
+
+CREATE TABLE `reservas` (
+  `id_reserva` bigint(20) UNSIGNED NOT NULL,
+  `id_cliente` bigint(20) UNSIGNED NOT NULL,
+  `id_viaje` bigint(20) UNSIGNED DEFAULT NULL,
+  `id_vuelo` bigint(20) DEFAULT NULL,
+  `fecha_reserva` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date DEFAULT NULL,
+  `cantidad_adultos` int(10) UNSIGNED NOT NULL DEFAULT 1,
+  `cantidad_ninos` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `precio_total` decimal(10,2) NOT NULL,
+  `estado_reserva` enum('Pendiente','Confirmada','Cancelada','Finalizada') NOT NULL DEFAULT 'Pendiente',
+  `observaciones` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipos_reporte`
+--
+
+CREATE TABLE `tipos_reporte` (
+  `id` bigint(20) NOT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
+  `nombre` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id_usuario` bigint(20) NOT NULL,
+  `usuario` varchar(50) NOT NULL,
+  `contrasena` varchar(255) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `rol` enum('Administrador','Empleado') NOT NULL DEFAULT 'Empleado',
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`id_usuario`, `usuario`, `contrasena`, `nombre`, `rol`, `fecha_registro`) VALUES
+(1, 'jefe', '123456789', 'ADMIN', 'Administrador', '2025-05-05 01:11:29');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `viajes`
+--
+
+CREATE TABLE `viajes` (
+  `id_viaje` bigint(20) UNSIGNED NOT NULL,
+  `numero_vuelo` varchar(50) NOT NULL,
+  `origen` varchar(100) NOT NULL,
+  `destino` varchar(100) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date NOT NULL,
+  `duracion_dias` bigint(20) UNSIGNED DEFAULT NULL,
+  `precio_adulto` decimal(10,2) NOT NULL,
+  `precio_nino` decimal(10,2) DEFAULT NULL,
+  `disponibilidad` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `itinerario` text DEFAULT NULL,
+  `imagen_principal` varchar(255) DEFAULT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fecha_actualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `viajes`
+--
+
+INSERT INTO `viajes` (`id_viaje`, `numero_vuelo`, `origen`, `destino`, `descripcion`, `fecha_inicio`, `fecha_fin`, `duracion_dias`, `precio_adulto`, `precio_nino`, `disponibilidad`, `itinerario`, `imagen_principal`, `fecha_creacion`, `fecha_actualizacion`) VALUES
+(1, 'AA101', 'Medellín (MDE), Aeropuerto Internacional José María Córdova', 'Cartagena de Indias, Colombia', 'Descubre la magia de la \"Ciudad Amurallada\", con sus coloridas calles, historia fascinante, playas caribeñas y una vibrante vida nocturna. Este paquete incluye vuelos de ida y vuelta, alojamiento en un hotel boutique en el centro histórico y un tour guiado por los principales atractivos. ¡Una experiencia inolvidable te espera!\r\n', '2025-07-15', '2025-07-21', 6, 1250000.00, 950000.00, 25, 'Día 1: Vuelo desde Medellín a Cartagena. Traslado al hotel y tiempo libre para explorar la ciudad.\nDía 2: Tour guiado por el centro histórico: Castillo de San Felipe, Palacio de la Inquisición, Plaza de Bolívar y las murallas.\nDía 3: Excursión a las Islas del Rosario, con actividades de snorkel y playa.\nDía 4: Día libre para disfrutar de las playas de Bocagrande o explorar Getsemaní.\nDía 5: Clase de cocina caribeña y cena con los platos preparados.\nDía 6: Mañana libre y traslado al aeropuerto para tomar el vuelo de regreso a Medellín.', 'vacaciones_cartagena_de_indias.webp', '2025-05-10 03:28:28', '2025-05-21 23:38:29'),
+(5, 'CX305', 'Bogotá, Aeropuerto Internacional El Dorado (BOG)', 'San Andrés Islas, Colombia', 'Escápate al paraíso caribeño de San Andrés. Disfruta de sus playas de arena blanca, el famoso mar de los siete colores, actividades acuáticas como snorkel y buceo, y una cultura vibrante. Este paquete incluye vuelo directo, alojamiento en hotel frente al mar y desayuno diario.', '2025-08-10', '2025-07-16', 6, 980000.00, 750000.00, 30, 'Día 1: Vuelo desde Bogotá a San Andrés. Traslado al hotel y tarde libre para explorar la isla.\r\nDía 2: Tour en lancha a Johnny Cay y el Acuario.\r\nDía 3: Día libre para disfrutar de la playa o realizar actividades opcionales como buceo o paseo en moto acuática.\r\nDía 4: Excursión a la Cueva de Morgan y la Piscinita.\r\nDía 5: Día libre para compras o relax en la playa.\r\nDía 6: Mañana libre y traslado al aeropuerto para tomar el vuelo de regreso a Bogotá.', 'San_Andres.jpeg', '2025-05-10 03:21:11', '2025-05-21 23:38:34'),
+(6, 'AV720', 'Bogotá, Aeropuerto Internacional El Dorado (BOG)', 'Leticia y alrededores, Amazonas', 'Explora la exuberante selva amazónica colombiana. Navega por el río Amazonas, observa la fauna exótica como delfines rosados, monos y aves multicolores, visita comunidades indígenas y experimenta la riqueza cultural de la región. Este viaje incluye vuelos, alojamiento en lodges en la selva, excursiones guiadas y comidas típicas.', '2025-05-16', '2025-05-20', 4, 1350000.00, 1050000.00, 30, 'Día 1: Vuelo desde Medellín a Leticia (LET). Traslado al lodge en la selva. Caminata de reconocimiento por los alrededores y charla introductoria sobre la Amazonía.\r\nDía 2: Navegación por el río Amazonas. Visita a la Isla de los Micos, hogar de miles de monos amigables. Observación de delfines rosados.\r\nDía 3: Encuentro cultural con una comunidad indígena Ticuna. Aprendizaje sobre sus tradiciones y costumbres. Caminata nocturna en la selva en busca de fauna activa.\r\nDía 4: Avistamiento de aves al amanecer. Desayuno y regreso a Leticia para tomar el vuelo de vuelta a Medellín.', 'Departamento-del-Amazonas.webp', '2025-05-17 13:47:08', '2025-05-21 23:38:39'),
+(7, 'CA415', 'Medellín (MDE), Aeropuerto Internacional José María Córdova', 'Santa Marta, Parque Nacional Natural Tayrona y alrededores', 'Descubre la majestuosidad de la Sierra Nevada, la montaña costera más alta del mundo. Camina por senderos en medio de la selva tropical, relájate en playas vírgenes como Bahía Concha o Cabo San Juan, y explora las ruinas arqueológicas de Pueblito. Este viaje incluye traslados, alojamiento en eco-hoteles o cabañas, entradas al parque y guías locales.', '2025-06-01', '2025-06-05', 5, 1200000.00, 900000.00, 45, 'Día 1: Vuelo desde Medellín a Santa Marta (SMR). Traslado al eco-hotel cerca de la entrada del Parque Tayrona. Tarde libre para relajarse.\r\nDía 2: Ingreso al Parque Tayrona. Caminata escénica a través de la selva tropical hasta la playa de Arrecifes.\r\nDía 3: Exploración de la zona de Cabo San Juan, una de las playas más icónicas del parque. Tiempo para nadar y disfrutar del paisaje.\r\nDía 4: Caminata hacia otras playas como La Piscina o Bahía Concha (según condiciones y preferencias del grupo). Opción de visitar Pueblito (requiere caminata más exigente).\r\nDía 5: Mañana libre para disfrutar de la playa cercana al alojamiento. Traslado de regreso al aeropuerto de Santa Marta para tomar el vuelo a Medellín.', 'KFSFA7RGZNBMHBUTNYJGWBYULY.avif', '2025-05-17 13:35:00', '2025-05-21 23:38:45'),
+(8, 'SW250', 'Cali, Aeropuerto Internacional Alfonso Bonilla Aragón (CLO)', 'Bucaramanga, Cañón del Chicamocha y Barichara', 'Vive la emoción de cruzar el impresionante Cañón del Chicamocha, uno de los más profundos del mundo. Disfruta de actividades como parapente, cable vuelo, senderismo y visita pueblos coloniales encantadores como Barichara y San Gil. Este viaje incluye vuelos o traslados terrestres, alojamiento en hoteles con vistas al cañón o en pueblos coloniales, y actividades opcionales.', '2025-06-11', '2025-06-15', 4, 950000.00, 700000.00, 35, 'Día 1: Vuelo desde Medellín a Bucaramanga (BGA). Traslado al hotel con vista al Cañón del Chicamocha. Tarde libre para disfrutar de las instalaciones.\r\nDía 2: Día de aventura en el Parque Nacional del Chicamocha (Panachi). Oportunidad de realizar actividades como el cable vuelo sobre el cañón (opcional).\r\nDía 3: Traslado al encantador pueblo colonial de Barichara. Recorrido por sus calles empedradas y arquitectura colonial.\r\nDía 4: Visita a San Gil, conocida como la capital de los deportes de aventura. Opciones de realizar rafting o parapente (opcional). Traslado al aeropuerto de Bucaramanga para el vuelo de regreso a Medellín.', 'VistaAerea-Barichara.jpg', '2025-05-17 13:38:47', '2025-05-21 23:38:54'),
+(9, 'GJ630', 'Cali, Aeropuerto Internacional Alfonso Bonilla Aragón (CLO)', 'Riohacha, Cabo de la Vela, Punta Gallinas', 'Descubre la belleza desértica y la rica cultura indígena Wayuu en La Guajira. Visita el Cabo de la Vela, el punto donde el desierto se encuentra con el mar Caribe, observa paisajes únicos como el Pilón de Azúcar y disfruta de la artesanía local. Este viaje incluye vuelos o traslados terrestres, alojamiento en rancherías Wayuu (acomodación básica), comidas típicas y tours guiados por la región.', '2025-06-01', '2025-06-03', 3, 800000.00, 600000.00, 40, 'Día 1: Vuelo desde Medellín a Riohacha (RCH). Traslado en vehículo 4x4 hacia el Cabo de la Vela. Visita al Pilón de Azúcar y el Ojo de Agua. Alojamiento en una ranchería Wayuu. Cena típica.\r\nDía 2: Exploración de las playas del Cabo de la Vela y sus alrededores. Interacción con la comunidad Wayuu y oportunidad de adquirir artesanías. Atardecer en el faro.\r\nDía 3: Mañana libre en el Cabo de la Vela. Traslado de regreso a Riohacha para tomar el vuelo de vuelta a Medellín. (Opción de extender el viaje a Punta Gallinas con un día adicional).', 'Faro-Punta-Gallinas-la-Guajira-Colombia.jpg', '2025-05-17 13:40:52', '2025-05-21 23:39:00'),
+(10, 'OS875', 'Medellín (MDE), Aeropuerto Internacional José María Córdova', 'San José del Guaviare y alrededores', 'Explora un destino emergente lleno de maravillas naturales e históricas. Descubre formaciones rocosas únicas como Ciudad de Piedra, pinturas rupestres ancestrales, cascadas cristalinas y una biodiversidad sorprendente. Este viaje incluye vuelos, alojamiento en hoteles locales o eco-lodges, guías especializados y permisos de ingreso a los sitios de interés.', '2025-07-01', '2025-07-04', 4, 1000000.00, 750000.00, 36, 'Día 1: Vuelo desde Medellín a San José del Guaviare (SJE). Traslado al hotel. Charla introductoria sobre la región.\r\nDía 2: Excursión a Ciudad de Piedra, un impresionante conjunto de formaciones rocosas. Caminata y exploración del área.\r\nDía 3: Visita a una zona con pinturas rupestres ancestrales (ej. Cerro Azul o Nuevo Tolima). Interpretación de las pictografías por guías locales.\r\nDía 4: Recorrido por cascadas y pozos naturales como Los Pozos. Tiempo para nadar y disfrutar del entorno natural. Traslado al aeropuerto de San José del Guaviare para el vuelo de regreso a Medellín.', 'tranquilandia-guaviare.webp', '2025-05-17 13:43:36', '2025-05-21 23:39:08'),
+(11, 'cambiar', 'cambiar', 'cambiar', 'cambiar', '2025-05-19', '2025-05-30', 11, 4635201.00, 156023.00, 40, 'cambiar', 'jamaica-gb17204f74_1920.jpg', '2025-05-22 01:34:32', '2025-05-22 01:34:32');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vuelo`
+--
+
+CREATE TABLE `vuelo` (
+  `id_vuelo` bigint(20) NOT NULL,
+  `numero_vuelo` varchar(50) NOT NULL,
+  `origen` varchar(100) NOT NULL,
+  `destino` varchar(100) NOT NULL,
+  `fecha_salida` date NOT NULL,
+  `hora_salida` time(6) NOT NULL,
+  `precio` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `vuelo`
+--
+
+INSERT INTO `vuelo` (`id_vuelo`, `numero_vuelo`, `origen`, `destino`, `fecha_salida`, `hora_salida`, `precio`) VALUES
+(1, 'AV-9725', 'Medellín (MDE), Aeropuerto Internacional José María Córdova', 'Santa Marta (SMR), Aeropuerto Internacional Simón Bolívar', '2025-06-15', '14:30:00.000000', 500000.00),
+(2, 'LA-4112', 'Bogotá (BOG), Aeropuerto Internacional El Dorado', 'Cali (CLO), Aeropuerto Internacional Alfonso Bonilla Aragón', '2025-07-20', '09:00:00.000000', 450000.00);
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  ADD PRIMARY KEY (`id_cliente`),
+  ADD UNIQUE KEY `tipo_documento` (`tipo_documento`,`numero_documento`);
+
+--
+-- Indices de la tabla `itinerarios`
+--
+ALTER TABLE `itinerarios`
+  ADD PRIMARY KEY (`id_itinerario`),
+  ADD KEY `itinerarios_ibfk_1` (`id_viaje`);
+
+--
+-- Indices de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD PRIMARY KEY (`id_pago`),
+  ADD KEY `pagos_ibfk_1` (`id_reserva`);
+
+--
+-- Indices de la tabla `piloto`
+--
+ALTER TABLE `piloto`
+  ADD PRIMARY KEY (`id_piloto`),
+  ADD UNIQUE KEY `UKbj3iyqmp71qe701b6cd88mh5s` (`id_vuelo`),
+  ADD KEY `fk_piloto_viaje` (`id_viaje`);
+
+--
+-- Indices de la tabla `reservas`
+--
+ALTER TABLE `reservas`
+  ADD PRIMARY KEY (`id_reserva`),
+  ADD KEY `FKktcjdrr0rosmuyk9d4mgpbx4l` (`id_cliente`),
+  ADD KEY `FKalgo2` (`id_viaje`),
+  ADD KEY `FK30884jrul2aere7lqd4059rsd` (`id_vuelo`);
+
+--
+-- Indices de la tabla `tipos_reporte`
+--
+ALTER TABLE `tipos_reporte`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id_usuario`),
+  ADD UNIQUE KEY `usuario` (`usuario`);
+
+--
+-- Indices de la tabla `viajes`
+--
+ALTER TABLE `viajes`
+  ADD PRIMARY KEY (`id_viaje`);
+
+--
+-- Indices de la tabla `vuelo`
+--
+ALTER TABLE `vuelo`
+  ADD PRIMARY KEY (`id_vuelo`),
+  ADD KEY `id_vuelo` (`id_vuelo`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  MODIFY `id_cliente` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+
+--
+-- AUTO_INCREMENT de la tabla `itinerarios`
+--
+ALTER TABLE `itinerarios`
+  MODIFY `id_itinerario` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `id_pago` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+
+--
+-- AUTO_INCREMENT de la tabla `piloto`
+--
+ALTER TABLE `piloto`
+  MODIFY `id_piloto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `reservas`
+--
+ALTER TABLE `reservas`
+  MODIFY `id_reserva` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+
+--
+-- AUTO_INCREMENT de la tabla `tipos_reporte`
+--
+ALTER TABLE `tipos_reporte`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id_usuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `viajes`
+--
+ALTER TABLE `viajes`
+  MODIFY `id_viaje` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de la tabla `vuelo`
+--
+ALTER TABLE `vuelo`
+  MODIFY `id_vuelo` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `itinerarios`
+--
+ALTER TABLE `itinerarios`
+  ADD CONSTRAINT `itinerarios_ibfk_1` FOREIGN KEY (`id_viaje`) REFERENCES `viajes` (`id_viaje`);
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`id_reserva`) REFERENCES `reservas` (`id_reserva`);
+
+--
+-- Filtros para la tabla `piloto`
+--
+ALTER TABLE `piloto`
+  ADD CONSTRAINT `FKlw2l0bd0wqbguik3s9ufvvf9d` FOREIGN KEY (`id_vuelo`) REFERENCES `vuelo` (`id_vuelo`),
+  ADD CONSTRAINT `fk_piloto_viaje` FOREIGN KEY (`id_viaje`) REFERENCES `viajes` (`id_viaje`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `reservas`
+--
+ALTER TABLE `reservas`
+  ADD CONSTRAINT `FK30884jrul2aere7lqd4059rsd` FOREIGN KEY (`id_vuelo`) REFERENCES `vuelo` (`id_vuelo`),
+  ADD CONSTRAINT `FKalgo2` FOREIGN KEY (`id_viaje`) REFERENCES `viajes` (`id_viaje`),
+  ADD CONSTRAINT `FKktcjdrr0rosmuyk9d4mgpbx4l` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id_cliente`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
