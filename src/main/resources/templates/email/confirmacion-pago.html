@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Reserva Nexus</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+
+    <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px;">
+        <h2 style="color: #007bff;">¡Reserva Confirmada y Pago Aprobado!</h2>
+        <p>Hola <strong th:text="${nombreCliente}">[Nombre Cliente]</strong>,</p>
+        
+        <p>Tu reserva en Nexus ha sido confirmada con éxito. A continuación, te mostramos los detalles de tu compra. ¡Gracias por elegirnos!</p>
+
+        <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
+            <h3 style="color: #28a745;">Detalles de la Reserva</h3>
+            <p><strong>Reserva #:</strong> <span th:text="${reserva.idReserva}">12345</span></p>
+            <p><strong>Estado:</strong> <span style="color: green;">APROBADA</span></p>
+            <p th:if="${reserva.viaje != null}"><strong>Destino:</strong> <span th:text="${reserva.viaje.destino}"></span></p>
+            <p th:if="${reserva.vuelo != null}"><strong>Vuelo:</strong> <span th:text="${reserva.vuelo.origen}"></span> a <span th:text="${reserva.vuelo.destino}"></span></p>
+            <p><strong>Fecha de Viaje:</strong> <span th:text="${#temporals.format(reserva.fechaInicio, 'dd-MM-yyyy')}"></span></p>
+            <p><strong>Adultos:</strong> <span th:text="${reserva.cantidadAdultos}"></span> | <strong>Niños:</strong> <span th:text="${reserva.cantidadNinos}"></span></p>
+        </div>
+
+        <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f8f9fa;">
+            <h3 style="color: #007bff;">Detalles del Pago</h3>
+            <p><strong>Pago #:</strong> <span th:text="${pago.idPago}">P999</span></p>
+            <p><strong>Monto Pagado:</strong> COP <span th:text="${#numbers.formatDecimal(pago.monto, 0, 'POINT', 0, 'COMMA')}"></span></p>
+            <p><strong>Fecha de Pago:</strong> <span th:text="${#temporals.format(pago.fechaPago, 'dd-MM-yyyy HH:mm')}"></span></p>
+            <p><strong>Método:</strong> <span th:text="${pago.tipoPago}"></span></p>
+        </div>
+        
+        <p>Si tienes alguna pregunta, por favor contáctanos.</p>
+        
+        <p>Atentamente,<br>El equipo de Nexus</p>
+    </div>
+
+</body>
+</html>

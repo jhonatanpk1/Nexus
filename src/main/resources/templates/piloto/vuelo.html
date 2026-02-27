@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${titulo}">Nexus - Pilotos</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body class="piloto-info-page">
+
+    <h1 class="piloto-info-title" th:text="${'Información del Vuelo de ' + piloto.nombre + ' ' + piloto.apellido}"></h1>
+	
+    <div class="info-card" th:if="${piloto != null and piloto.vuelo != null}">
+        <div class="info-item">
+            <strong class="info-label">Nombre del Piloto:</strong>
+            <span class="info-value" th:text="${piloto.nombre + ' ' + piloto.apellido}"></span>
+        </div>
+        <div class="info-item">
+            <strong class="info-label">Número de Vuelo:</strong>
+            <span class="info-value" th:text="${piloto.vuelo.numeroVuelo}"></span>
+        </div>
+        <div class="info-item">
+            <strong class="info-label">Origen:</strong>
+            <span class="info-value" th:text="${piloto.vuelo.origen}"></span>
+        </div>
+        <div class="info-item">
+            <strong class="info-label">Destino:</strong>
+            <span class="info-value" th:text="${piloto.vuelo.destino}"></span>
+        </div>
+        </div>
+	    <div class="no-info-message" th:if="${piloto == null or piloto.vuelo == null}">
+	        <p>No se encontró información del vuelo para este piloto.</p>
+	    </div>
+
+    <a class="back-link-vuelo" th:href="@{/piloto/listar}">Volver a la lista de pilotos</a>
+    
+</body>
+</html>

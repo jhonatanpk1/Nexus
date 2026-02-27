@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Aerolíneas</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <script th:inline="javascript">
+	    function toggleFechaVuelta() {
+	        var tipoViaje = document.getElementById("tipoViaje").value;
+	        var fechaVueltaDiv = document.getElementById("fechaVueltaDiv");
+	        var fechaVueltaInput = document.getElementById("fechaVuelta");
+	        var formularioBusqueda = document.querySelector("form");
+	
+	        if (tipoViaje === "ida") {
+	            fechaVueltaDiv.classList.add("hidden");
+	            fechaVueltaInput.removeAttribute("required");
+	            formularioBusqueda.setAttribute("action", "/vuelo/listar");
+	            fechaVueltaInput.value = "";
+	        }else if (tipoViaje === "ida_vuelta") {
+	            fechaVueltaDiv.classList.remove("hidden");
+	            fechaVueltaInput.setAttribute("required", "required");
+	            formularioBusqueda.setAttribute("action", "/viaje/listar"); 
+	        }
+	    }
+	
+	    window.onload = toggleFechaVuelta;
+	</script>
+</head>
+<body>
+	<div th:insert="~{layout/header :: header}"></div>
+
+    <section layout:fragment="content">
+
+        <div class="search-container">
+		    <h2>Busca tu Vuelo</h2>
+		    <form th:action="${tipoViaje == 'ida'} ? @{/vuelo/listar} : @{/viaje/listar}" method="get"> <div class="form-row">
+		            <div class="form-group">
+		                <label for="tipoViaje">Tipo de Viaje:</label>
+		                <select id="tipoViaje" name="tipoViaje" onchange="toggleFechaVuelta()">
+		                    <option value="ida" selected>Solo Ida</option>
+		                    <option value="ida_vuelta">Ida y Vuelta</option>
+		                </select>
+		            </div>
+		            <div class="form-group">
+		                <label for="adultos">Adultos:</label>
+		                <select id="adultos" name="adultos">
+		                    <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}"></option>
+		                </select>
+		            </div>
+		            <div class="form-group">
+		                <label for="ninos">Niños:</label>
+		                <select id="ninos" name="ninos">
+		                    <option value="0">0</option>
+		                    <option th:each="i : ${#numbers.sequence(1, 5)}" th:value="${i}" th:text="${i}"></option>
+		                </select>
+		            </div>
+		        </div>
+		        <div class="form-row">
+		            <div class="form-group">
+		                <label for="origen">Origen:</label>
+		                <input type="text" id="origen" name="origen" required />
+		            </div>
+		            <div class="form-group">
+		                <label for="destino">Destino:</label>
+		                <input type="text" id="destino" name="destino" required />
+		            </div>
+		        </div>
+		        <div class="form-row">
+		            <div class="form-group">
+		                <label for="fechaIda">Fecha de Ida:</label>
+		                <input type="date" id="fechaIda" name="fechaIda" required />
+		            </div>
+		            <div class="form-group hidden" id="fechaVueltaDiv">
+		                <label for="fechaVuelta">Fecha de Vuelta:</label>
+		                <input type="date" id="fechaVuelta" name="fechaVuelta" />
+		            </div>
+		        </div>
+		        <button type="submit">Buscar Vuelos</button>
+		    </form>
+		</div>
+		
+        <div class="articulo">
+            <h2 class="module-section-title">Vuelos</h2>
+            <div class="vuelos-index-container">
+                <div th:each="vuelo : ${vuelos}" class="vuelo-index-item">
+					<a th:href="@{/reserva/comprar/vuelo/{id}(id=${vuelo.idVuelo})}" style="text-decoration: none;">
+                        <h3>Vuelo <span th:text="${vuelo.numeroVuelo}"></span></h3>
+                        <p><strong>Origen:</strong> <span th:text="${vuelo.origen}"></span></p>
+                        <p><strong>Destino:</strong> <span th:text="${vuelo.destino}"></span></p>
+                        <p><strong>Fecha Salida:</strong> <span th:text="${#temporals.format(vuelo.fechaSalida, 'dd-MM-yyyy')}"></span> <span th:text="${#temporals.format(vuelo.horaSalida, 'HH:mm')}"></span></p>
+                        <p class="precio">Precio: COP <span th:text="${#numbers.formatDecimal(vuelo.precio, 0, 'POINT', 0, 'COMMA')}"></span></p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="articulo">
+            <h2 class="module-section-title">Viajes</h2>
+            <div class="viajes-index-container">
+                <div th:each="viaje : ${viajes}" class="viaje-index-item">
+					<a th:href="@{/reserva/comprar/{id}(id=${viaje.idViaje})}" style="text-decoration: none;">
+                        <h3 th:text="${viaje.destino}"></h3>
+                        <p class="fecha-inicio" th:text="${#temporals.format(viaje.fechaInicio, 'dd-MM-yyyy')} + ' - ' + ${#temporals.format(viaje.fechaFin, 'dd-MM-yyyy')} + ' (' + ${viaje.duracionDias} + ' días)'"></p>
+                        <p class="precio">Precio Adulto: COP <span th:text="${#numbers.formatDecimal(viaje.precioAdulto, 0, 'POINT', 0, 'COMMA')}"></span></p>
+                        <p class="precio" th:if="${viaje.precioNino != null}">Precio Niño: COP <span th:text="${#numbers.formatDecimal(viaje.precioNino, 0, 'POINT', 0, 'COMMA')}"></span></p>
+                    </a>
+                    <div class="actions">
+                        <span th:if="${session.usuarioId != null}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="module-section-title">Opciones para Clientes</h2>
+        <div class="link-grid-container">
+            <div>
+                <a th:href="@{/viaje/listar}" class="module-link">
+                    <h3>Ver Vuelos</h3>
+                    <p>Explora nuestros destinos y vuelos disponibles.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/reserva/listar}" class="module-link">
+                    <h3>Mis Reservas</h3>
+                    <p>Consulta y gestiona tus reservas de vuelos.</p>
+                </a>
+            </div>
+        </div>
+
+        <h2 class="module-section-title" th:if="${session.usuarioId != null}">Panel de Administración</h2>
+        <div class="link-grid-container" th:if="${session.usuarioId != null}">
+            <div>
+                <a th:href="@{/vista/listar}" class="module-link">
+                    <h3>Gestionar Clientes</h3>
+                    <p>Administra la información de tus clientes.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/piloto/listar}" class="module-link">
+                    <h3>Gestionar Pilotos</h3>
+                    <p>Administra la información de los pilotos.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/reporte/menu}" class="module-link">
+                    <h3>Reportes y Estadísticas</h3>
+                    <p>Visualiza informes detallados y estadísticas.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/reserva/listar}" class="module-link">
+                    <h3>Gestionar Reservas</h3>
+                    <p>Administra las reservas de vuelos.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/usuario/listar}" class="module-link">
+                    <h3>Gestionar Usuarios</h3>
+                    <p>Administra las cuentas de los usuarios del sistema.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/viaje/form}" class="module-link">
+                    <h3>Gestionar Vuelos</h3>
+                    <p>Agregar, editar o eliminar información de itinerarios.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/pago/listar}" class="module-link">
+                    <h3>Gestionar Pagos</h3>
+                    <p>Administra las transacciones de pago.</p>
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/vuelo/listar}" class="module-link">
+                    <h3>Gestionar vuelo</h3>
+                    <p>Agregar, editar o eliminar información de vuelos.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

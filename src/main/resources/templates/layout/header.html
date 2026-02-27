@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+	<header>
+        <nav>
+	        <div class="logo-container">
+	            <img th:src="@{/images/Nexus.png}" alt="Logo de Nexus Aerolíneas" class="logo">
+	            <h1 class="site-title">Nexus Aerolíneas</h1>
+	        </div>
+        
+            <ul>
+                <li><a th:href="@{/}">Inicio</a></li>
+                <li><a th:href="@{/viaje/listar}">Ver Viajes</a></li>
+                <li><a th:href="@{/vuelo/listar}">Ver Vuelos</a></li>
+                <li th:if="${session.usuarioId == null}">
+                    <a th:href="@{/login}">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión (Empleados)
+                    </a>
+                </li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/vista/listar}">Gestionar Clientes</a></li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/piloto/listar}">Gestionar Pilotos</a></li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/reporte/menu}">Reportes</a></li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/reserva/listar}">Gestionar Reservas</a></li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/usuario/listar}">Gestionar Usuarios</a></li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/viaje/form}">Gestionar Viajes</a></li>
+                <li th:if="${session.usuarioId != null}"><a th:href="@{/pago/listar}">Gestionar Pagos</a></li>
+            </ul>
+            
+            <div class="session-info" th:if="${session.usuarioId != null}">
+	            <span class="session-icon">&#10004;</span>
+	            <form th:action="@{/logout}" method="post">
+	                <button type="submit" class="logout-button">Cerrar Sesión</button>
+	            </form>
+	        </div>
+        </nav>
+    </header>
+</body>
+</html>

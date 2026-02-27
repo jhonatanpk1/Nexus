@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Listado de Pagos</title> <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div th:insert="~{layout/header :: header}"></div>
+
+    <main class="report-reservas"> <h2 class="text-center mb-4">Listado de Pagos</h2> <div class="reservas-table-container">
+            <table class="table table-striped table-hover reservas-table"> <thead>
+                    <tr>
+                        <th>ID Pago</th> <th>ID Reserva</th>
+                        <th>Cliente</th> <th>Viaje/Vuelo</th> <th>Fecha Pago</th>
+                        <th>Monto</th>
+                        <th>Tipo Pago</th>
+                        <th>Estado Pago</th>
+                        <th>Observaciones Pago</th> </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pago : ${pagos}"> <td th:text="${pago.idPago}"></td>
+                        <td th:text="${pago.reserva?.idReserva}"></td> <td>
+                            <span th:if="${pago.reserva?.cliente != null}" th:text="${pago.reserva.cliente.nombre + ' ' + pago.reserva.cliente.apellido}"></span>
+                            <span th:unless="${pago.reserva?.cliente != null}">N/A</span>
+                        </td>
+                        <td>
+                            <span th:if="${pago.reserva?.viaje != null}" th:text="${pago.reserva.viaje.destino}"></span>
+                            <span th:if="${pago.reserva?.vuelo != null}" th:text="${pago.reserva.vuelo.destino}"></span>
+                            <span th:unless="${pago.reserva?.viaje != null or pago.reserva?.vuelo != null}">N/A</span>
+                        </td>
+                        <td th:text="${#temporals.format(pago.fechaPago, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${#numbers.formatCurrency(pago.monto)}"></td>
+                        <td th:text="${pago.tipoPago}"></td>
+                        <td th:text="${pago.estadoPago}"></td>
+                        <td th:text="${pago.observaciones != null ? pago.observaciones : '-'}"></td>
+                    </tr>
+                    <tr th:if="${pagos == null or pagos.isEmpty()}"> <td colspan="9" class="no-reservas">No hay pagos registrados.</td> </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-4">
+            <a th:href="@{/}" class="btn btn-primary btn-lg">Volver al Inicio</a>
+        </div>
+    </main>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,262 @@
+
+/* Flight Search Form (Search Container) */
+
+
+
+
+
+
+
+
+
+.search-container input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.search-container input[type="text"]:focus,
+.search-container input[type="date"]:focus,
+.search-container select:focus {
+    box-shadow: 0 0 8px 2px #00ffe7;
+}
+
+.search-container .hidden {
+    display: none;
+}
+
+.search-container button[type="submit"] {
+    grid-column: 1 / -1;
+    background: linear-gradient(90deg, #0077ff, #00ffe7);
+    border: none;
+    padding: 18px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0b1e29;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background 0.5s ease;
+    box-shadow: 0 5px 15px rgba(0, 255, 231, 0.7);
+}
+
+.search-container button[type="submit"]:hover {
+    background: linear-gradient(90deg, #00ffe7, #0077ff);
+}
+
+/* Passengers Counter (Dentro del formulario de búsqueda) */
+.passenger-counter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.passenger-counter button {
+    background: transparent;
+    border: 2px solid #00ffe7;
+    color: #00ffe7;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.passenger-counter button:hover {
+    background-color: #00ffe7;
+    color: #0b1e29;
+}
+
+.passenger-counter input {
+    width: 60px;
+    text-align: center;
+    font-size: 1rem;
+    padding: 8px 8px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    outline: none;
+}
+
+.passenger-counter input:focus {
+    box-shadow: 0 0 8px 2px #00ffe7;
+}
+
+/* Module Sections (Vuelos, Viajes, Opciones Cliente, Administración) */
+.articulo {
+    margin-top: 40px;
+    padding: 0 20px;
+}
+
+.module-section-title {
+    color: #00ffe7;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 2em;
+}
+
+/* Card styles for Vuelos and Viajes */
+.vuelos-index-container, .viajes-index-container, .link-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.vuelo-index-item, .viaje-index-item, .module-link {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 255, 231, 0.3);
+    text-decoration: none;
+    color: #e0eaff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.vuelo-index-item:hover, .viaje-index-item:hover, .module-link:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 255, 231, 0.6);
+    cursor: pointer;
+}
+
+.vuelo-index-item h3, .viaje-index-item h3, .module-link h3 {
+    color: #00ffe7;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.vuelo-index-item p, .viaje-index-item p, .module-link p {
+    color: #a0d8efcc;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+.vuelo-index-item p.precio, .viaje-index-item p.precio {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #00ffe7;
+}
+
+/* Acciones dentro de las tarjetas (Editar/Eliminar) */
+.vuelo-index-item .actions, .viaje-index-item .actions {
+    margin-top: 15px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.actions a {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button {
+    background-color: #0077ff;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+/* Estilos para el texto cuando no hay vuelos/viajes */
+.text-center {
+    text-align: center;
+    margin-top: 20px;
+    padding: 0 20px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px 10px;
+    font-size: 0.85rem;
+    color: #a0d8efcc;
+    background: #122f45;
+    user-select: none;
+    margin-top: auto;
+    width: 100%;
+}
+
+footer a {
+    color: #00ffe7;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .homepage-container .welcome-message {
+        font-size: 2.5rem;
+    }
+    
+    .session-info {
+        position: static;
+        text-align: center;
+        margin-top: 15px;
+        justify-content: center;
+    }
+    
+    .search-container form {
+        grid-template-columns: 1fr;
+    }
+    
+    .vuelos-index-container, .viajes-index-container, .link-grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 600px) {
+    .homepage-container .welcome-message {
+        font-size: 2.3rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .action-buttons a, .logout-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        width: 80%;
+        margin: 0 auto;
+    }
+    
+    .module-section-title {
+        font-size: 1.8em;
+    }
+}

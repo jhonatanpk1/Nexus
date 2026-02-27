@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Confirmación de Pago</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div class="confirmation-page">
+        <div class="confirmation-message" th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Aprobado'}">
+            ¡Pago Exitoso! <i style="font-size: 1.5em;" class="fas fa-check-circle"></i>
+        </div>
+        <div class="confirmation-message" th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Pendiente'}">
+            Pago Pendiente <i style="font-size: 1.5em;" class="fas fa-clock"></i>
+        </div>
+        <div class="confirmation-message" th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Rechazado'}">
+            Pago Rechazado <i style="font-size: 1.5em;" class="fas fa-times-circle"></i>
+        </div>
+        <div class="confirmation-message" th:if="${pago == null or pago.estadoPago == null}">
+            Información de Pago No Disponible.
+        </div>
+
+
+        <div class="order-details">
+            <h3>Detalles de tu Reserva</h3>
+            <p th:if="${reserva != null}"><strong>Número de Reserva:</strong> <span th:text="${reserva.idReserva}"></span></p>
+            <p th:if="${pago != null and pago.estadoPago != null}"><strong>Estado de la Reserva:</strong>
+                <span th:if="${pago.estadoPago.name() == 'Aprobado'}" style="color: green;">Confirmada</span>
+                <span th:if="${pago.estadoPago.name() == 'Pendiente'}" style="color: orange;">Pendiente</span>
+                <span th:if="${pago.estadoPago.name() == 'Rechazado'}" style="color: red;">Fallida</span>
+            </p>
+            <p th:if="${reserva != null and reserva.cantidadAdultos != null}"><strong>Cantidad de Adultos:</strong> <span th:text="${reserva.cantidadAdultos}"></span></p>
+            <p th:if="${reserva != null and reserva.cantidadNinos != null}"><strong>Cantidad de Niños:</strong> <span th:text="${reserva.cantidadNinos}"></span></p>
+            <p th:if="${reserva != null and reserva.precioTotal != null}"><strong>Precio Total:</strong> COP <span th:text="${#numbers.formatDecimal(reserva.precioTotal, 0, 'POINT', 0, 'COMMA')}"></span></p>
+
+            <div th:if="${reserva != null and reserva.viaje != null}">
+                <p><strong>Tipo:</strong> Viaje</p>
+                <p th:if="${reserva.viaje.destino != null}"><strong>Destino:</strong> <span th:text="${reserva.viaje.destino}"></span></p>
+                <p th:if="${reserva.viaje.fechaInicio != null and reserva.viaje.fechaFin != null}"><strong>Fechas del Viaje:</strong> <span th:text="${#temporals.format(reserva.viaje.fechaInicio, 'dd-MM-yyyy')}"></span> al <span th:text="${#temporals.format(reserva.viaje.fechaFin, 'dd-MM-yyyy')}"></span></p>
+            </div>
+
+            <div th:if="${reserva != null and reserva.vuelo != null}">
+                <p><strong>Tipo:</strong> Vuelo</p>
+                <p th:if="${reserva.vuelo.origen != null}"><strong>Origen:</strong> <span th:text="${reserva.vuelo.origen}"></span></p>
+                <p th:if="${reserva.vuelo.destino != null}"><strong>Destino:</strong> <span th:text="${reserva.vuelo.destino}"></span></p>
+                <p th:if="${reserva.vuelo.fechaSalida != null}"><strong>Fecha y Hora de Salida:</strong> <span th:text="${#temporals.format(reserva.vuelo.fechaSalida, 'dd-MM-yyyy HH:mm')}"></span></p>
+                <p th:if="${reserva.vuelo.numeroVuelo != null}"><strong>Número de Vuelo:</strong> <span th:text="${reserva.vuelo.numeroVuelo}"></span></p>
+            </div>
+            
+            <p th:if="${reserva != null and reserva.fechaInicio != null}"><strong>Fecha de Inicio de la Reserva:</strong> <span th:text="${#temporals.format(reserva.fechaInicio, 'dd-MM-yyyy')}"></span></p>
+            <p th:if="${reserva != null and reserva.fechaFin != null}"><strong>Fecha de Fin de la Reserva:</strong> <span th:text="${#temporals.format(reserva.fechaFin, 'dd-MM-yyyy')}"></span></p>
+
+        </div>
+
+        <div class="payment-details">
+            <h3>Detalles del Pago</h3>
+            <p th:if="${pago != null}"><strong>Número de Pago:</strong> <span th:text="${pago.idPago}"></span></p>
+            <p th:if="${pago != null and pago.fechaPago != null}"><strong>Fecha de Pago:</strong> <span th:text="${#temporals.format(pago.fechaPago, 'dd-MM-yyyy HH:mm:ss')}"></span></p>
+            <p th:if="${pago != null and pago.tipoPago != null}"><strong>Método de Pago:</strong> <span th:text="${pago.tipoPago}"></span></p>
+            <p th:if="${pago != null and pago.monto != null}"><strong>Monto Pagado:</strong> COP <span th:text="${#numbers.formatDecimal(pago.monto, 0, 'POINT', 0, 'COMMA')}"></span></p>
+            <p th:if="${pago != null and pago.referencia != null and pago.referencia != ''}"><strong>Referencia de Pago:</strong> <span th:text="${pago.referencia}"></span></p>
+            <p th:if="${pago != null and pago.estadoPago != null}"><strong>Estado de la Reserva:</strong>
+			    <span th:if="${pago.estadoPago.name() == 'Aprobado'}" style="color: green;">Confirmada</span>
+			    <span th:if="${pago.estadoPago.name() == 'Pendiente'}" style="color: orange;">Pendiente</span>
+			    <span th:if="${pago.estadoPago.name() == 'Rechazado'}" style="color: red;">Fallida</span>
+			</p>
+        </div>
+
+        <p th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Aprobado'}">Gracias por tu compra. ¡Esperamos que disfrutes tu experiencia!</p>
+        <p th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Pendiente'}">Tu pago está pendiente de verificación. Te notificaremos cuando se apruebe.</p>
+        <p th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Rechazado'}">Tu pago ha sido rechazado. Por favor, verifica los detalles o intenta con otro método de pago.</p>
+
+        <div th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Aprobado'}">
+            <p>Para consultas sobre cancelación o modificaciones, por favor <a href="#">contacta a nuestro servicio al cliente</a>.</p>
+        </div>
+        <div th:if="${pago != null and pago.estadoPago != null and pago.estadoPago.name() == 'Rechazado'}">
+            <p>Por favor, <a href="#">contacta a nuestro servicio al cliente</a> si tienes alguna pregunta sobre el rechazo del pago.</p>
+        </div>
+
+        <a th:href="@{/}" class="back-home">Volver a la Página Principal</a>
+    </div>
+
+    <script src="https://kit.fontawesome.com/your_fontawesome_kit.js" crossorigin="anonymous"></script>
+</body>
+</html>

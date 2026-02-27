@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas por Fecha | Nexus</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Ventas por Fecha</h1>
+
+        <div class="chart-container">
+            <h2>Gráfico de Ventas por Fecha</h2>
+            <canvas id="ventasPorFechaChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="report-container">
+            <h2>Detalle de Ventas por Fecha</h2>
+            <div id="filtroFechasTabla">
+                <label for="filtroFechaInicioTabla">Fecha Inicio:</label>
+                <input type="date" id="filtroFechaInicioTabla">
+                <label for="filtroFechaFinTabla">Fecha Fin:</label>
+                <input type="date" id="filtroFechaFinTabla">
+                <button onclick="filtrarTablaPorFecha()">Buscar</button>
+            </div>
+            <table id="ventasPorFechaTable">
+                <thead>
+                    <tr>
+                        <th>Fecha de Venta</th>
+                        <th>Total de Venta</th>
+                    </tr>
+                </thead>
+                <tbody id="ventasPorFechaTablaBody">
+                    <tr><td colspan="2">Cargando informe de ventas...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bottom-controls">
+            <button class="btn btn-secondary" onclick="window.history.back()">Regresar</button>
+            <button class="btn btn-danger" onclick="descargarPDFVentasPorFecha()">Descargar PDF</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fechaInicio = urlParams.get('fechaInicio');
+            const fechaFin = urlParams.get('fechaFin');
+
+            if (fechaInicio && fechaFin) {
+                const inicioFormateado = new Date(fechaInicio).toLocaleDateString();
+                const finFormateado = new Date(fechaFin).toLocaleDateString();
+                const tituloGrafico = `Ventas desde ${inicioFormateado} hasta ${finFormateado}`;
+                generarReporteVentas(fechaInicio, fechaFin, tituloGrafico); // Pasar el título a la función
+            } else {
+                document.querySelector('.container').innerHTML = '<h1>Ventas por Fecha</h1><p class="lead">Por favor, seleccione un rango de fechas desde la página principal.</p><div class="bottom-controls"><button class="btn btn-secondary" onclick="window.history.back()">Regresar</button></div>';
+            }
+        });
+
+        const ventasPorFechaCanvas = document.getElementById('ventasPorFechaChart');
+        const ventasPorFechaTablaBody = document.getElementById('ventasPorFechaTablaBody');
+        let ventasPorFechaChart;
+        let allVentasData = []; // Variable para almacenar todos los datos de ventas cargados
+
+        function generarReporteVentas(fechaInicio, fechaFin, tituloGrafico) {
+            fetch(`/api/reportes/ventas-por-fecha?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    allVentasData = data; // Almacenar todos los datos cargados
+                    actualizarGraficoVentas(data, tituloGrafico); // Pasar el título a la función de actualizar el gráfico
+                    actualizarTablaVentas(data);
+                })
+                .catch(error => {
+                    console.error('Error al generar el reporte de ventas:', error);
+                    ventasPorFechaTablaBody.innerHTML = '<tr><td colspan="2">Error al cargar el reporte.</td></tr>';
+                });
+        }
+
+        function actualizarGraficoVentas(data, tituloGrafico) {
+            const labels = data.map(venta => new Date(venta.fecha_venta).toLocaleDateString());
+            const values = data.map(venta => venta.total_venta);
+
+            if (ventasPorFechaChart) {
+                ventasPorFechaChart.destroy();
+            }
+
+            ventasPorFechaChart = new Chart(ventasPorFechaCanvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Venta',
+                        data: values,
+                        backgroundColor: 'rgba(0, 123, 255, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: tituloGrafico, // Usar el título dinámico
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Total de Venta ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Fecha de Venta'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function actualizarTablaVentas(data) {
+            ventasPorFechaTablaBody.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(venta => {
+                    const row = ventasPorFechaTablaBody.insertRow();
+                    const fechaCell = row.insertCell();
+                    const totalCell = row.insertCell();
+                    fechaCell.textContent = new Date(venta.fecha_venta).toLocaleDateString();
+                    totalCell.textContent = `$${venta.total_venta.toFixed(2)}`;
+                });
+            } else {
+                ventasPorFechaTablaBody.innerHTML = '<tr><td colspan="2">No se encontraron ventas para el rango de fechas seleccionado.</td></tr>';
+            }
+        }
+
+        function filtrarTablaPorFecha() {
+            const filtroFechaInicio = document.getElementById('filtroFechaInicioTabla').value;
+            const filtroFechaFin = document.getElementById('filtroFechaFinTabla').value;
+
+            const datosFiltrados = allVentasData.filter(venta => {
+                const fechaVenta = new Date(venta.fecha_venta);
+                const inicioFiltro = filtroFechaInicio ? new Date(filtroFechaInicio) : null;
+                const finFiltro = filtroFechaFin ? new Date(filtroFechaFin) : null;
+
+                const fechaVentaSinHora = new Date(fechaVenta.getFullYear(), fechaVenta.getMonth(), fechaVenta.getDate());
+                const inicioFiltroSinHora = inicioFiltro ? new Date(inicioFiltro.getFullYear(), inicioFiltro.getMonth(), inicioFiltro.getDate()) : null;
+                const finFiltroSinHora = finFiltro ? new Date(finFiltro.getFullYear(), finFiltro.getMonth(), finFiltro.getDate()) : null;
+
+                let cumpleInicio = true;
+                if (inicioFiltroSinHora) {
+                    cumpleInicio = fechaVentaSinHora >= inicioFiltroSinHora;
+                }
+
+                let cumpleFin = true;
+                if (finFiltroSinHora) {
+                    cumpleFin = fechaVentaSinHora <= finFiltroSinHora;
+                }
+
+                return cumpleInicio && cumpleFin;
+            });
+
+            actualizarTablaVentas(datosFiltrados);
+        }
+
+        function descargarPDFVentasPorFecha() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fechaInicio = urlParams.get('fechaInicio');
+            const fechaFin = urlParams.get('fechaFin');
+
+            if (fechaInicio && fechaFin) {
+                window.location.href = `/reporte/generar-pdf/ventaPorFecha?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+            } else {
+                alert('Por favor, seleccione un rango de fechas desde la página principal antes de descargar el PDF.');
+            }
+        }
+    </script>
+</body>
+</html>

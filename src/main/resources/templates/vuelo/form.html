@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nexus - Crear Nuevo Vuelo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <main class="form-container">
+        <h2 th:text="${titulo}">Crear Nuevo Vuelo</h2>
+        <form th:action="@{/vuelo/save}" method="post" th:object="${vuelo}">
+            <input type="hidden" th:field="*{idVuelo}" th:if="${vuelo.idVuelo != null}">
+
+            <div class="form-group">
+                <label for="numeroVuelo">Número de Vuelo:</label>
+                <input type="text" id="numeroVuelo" th:field="*{numeroVuelo}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="origen">Origen:</label>
+                <input type="text" id="origen" th:field="*{origen}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="destino">Destino:</label>
+                <input type="text" id="destino" th:field="*{destino}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaSalida">Fecha de Salida:</label>
+                <input type="date" id="fechaSalida" th:field="*{fechaSalida}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="horaSalida">Hora de Salida:</label>
+                <input type="time" id="horaSalida" th:field="*{horaSalida}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="text" id="precio" th:field="*{precio}" class="form-control" required>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="form-button save-button">Guardar Vuelo</button>
+                <a th:href="@{/vuelo/listar}" class="form-button cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const precioInput = document.getElementById('precio');
+
+            function validarPrecio(inputElement) {
+                inputElement.addEventListener('input', function() {
+                    const valor = this.value;
+                    const soloNumerosYUnPunto = /^[0-9]*\.?[0-9]*$/;
+
+                    if (!soloNumerosYUnPunto.test(valor)) {
+                        this.value = valor.replace(/[^0-9.]/g, '');
+                        const puntos = this.value.split('.').length - 1;
+                        if (puntos > 1) {
+                            const partes = this.value.split('.');
+                            this.value = partes[0] + '.' + partes.slice(1).join('');
+                        }
+                    }
+                });
+            }
+
+            validarPrecio(precioInput);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Gestión de Clientes</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div th:insert="~{layout/header :: header}"></div>
+
+    <main>
+        <h2>Gestión de Clientes</h2>
+        <div th:if="${clientes != null and !clientes.isEmpty()}">
+            <table class="clientes-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>doc</th>
+                        <th>Numero</th>
+                        <th>Fecha de nac</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                        <th th:if="${session.usuarioId != null}">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cliente : ${clientes}">
+                        <td th:text="${cliente.nombre}"></td>
+                        <td th:text="${cliente.apellido}"></td>
+                        <td th:text="${cliente.tipoDocumento}"></td> 
+                        <td th:text="${cliente.numeroDocumento}"></td> 
+                        <td th:text="${cliente.fechaNacimiento}"></td>
+                        <td th:text="${cliente.correoElectronico}"></td>
+                        <td th:text="${cliente.telefono}"></td>
+                        <td th:text="${cliente.direccion}"></td>
+                        <td class="actions">
+    						<a th:href="@{/vista/edit/{id}(id=${cliente.idCliente})}" class="edit-button">Editar</a>
+    						<a th:href="@{/vista/delete/{id}(id=${cliente.idCliente})}" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este cliente?')">Eliminar</a>
+						</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${clientes != null and !clientes.isEmpty()}">
+            <p class="no-clientes">No hay clientes registrados en el sistema.</p>
+        </div>
+        <div class="add-button-container">
+            <a th:href="@{/vista/registrocliente}" class="add-usuario-link" style="float: left;">Agregar Nuevo Cliente</a>
+        </div>
+    </main>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

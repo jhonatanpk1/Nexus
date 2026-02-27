@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nexus - Información del Pasajero</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <main class="form-container">
+        <h2 th:text="${titulo}">Información del Pasajero</h2>
+        
+        <div th:if="${error != null}" class="alert alert-danger" role="alert">
+            <p th:text="${error}"></p>
+        </div>
+        <div th:if="${success != null}" class="alert alert-success" role="alert">
+            <p th:text="${success}"></p>
+        </div>
+        
+        <form th:action="${viaje != null ? 
+	        '/reserva/guardar-cliente/' + viaje.idViaje : 
+	        ('/reserva/guardar-cliente/vuelo/' + vuelo.idVuelo)}" 
+	    	method="post" th:object="${cliente}">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" required
+                       pattern="^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$"
+                       title="El nombre solo debe contener letras y espacios (sin números ni caracteres especiales)."
+                       oninput="this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, '');">
+            </div>
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" th:field="*{apellido}" required
+                       pattern="^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$"
+                       title="El apellido solo debe contener letras y espacios (sin números ni caracteres especiales)."
+                       oninput="this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, '');">
+            </div>
+            <div class="form-group">
+                <label for="tipoDocumento">Tipo de Documento:</label>
+		    	<select id="tipoDocumento" th:field="*{tipoDocumento}" required class="form-control">
+			        <option value="">Seleccione...</option> <option value="RC">Registro Civil (RC)</option>
+			        <option value="TI">Tarjeta de Identidad (TI)</option>
+			        <option value="CC">Cédula de Ciudadanía (CC)</option>
+			        <option value="TE">Tarjeta de Extranjería (TE)</option>
+			        <option value="CE">Cédula de Extranjería (CE)</option>
+			        <option value="NIT">NIT (Número de Identificación Tributaria)</option>
+			        <option value="PP">Pasaporte (PP)</option>
+			        <option value="PEP">Permiso Especial de Permanencia (PEP)</option>
+			        <option value="DIE">Documento de Identificación Extranjero (DIE)</option>
+		        </select>
+            </div>
+            <div class="form-group">
+                <label for="numeroDocumento">Número de Documento:</label>
+                <input type="text" id="numeroDocumento" th:field="*{numeroDocumento}" required 
+		               pattern="^[0-9]{7,}$" title="Ingrese solo números con un mínimo de 7 dígitos." 
+		               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                <small>Solo se admiten números (mínimo 7 dígitos).</small>
+            </div>
+            <div class="form-group">
+                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" required>
+            </div>
+            <div class="form-group">
+                <label for="correoElectronico">Correo Electrónico:</label>
+                <input type="email" id="correoElectronico" th:field="*{correoElectronico}" required
+                       pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org|edu|gob|info|biz|co|es|mx|ar|cl|pe)$"
+                       title="Ingrese un correo electrónico válido (ej: ejemplo@dominio.com).">
+                <small>Ejemplo: ejemplo@dominio.com</small>
+            </div>
+            <div class="form-group">
+			    <label for="telefono">Teléfono:</label>
+			    <input type="tel" id="telefono" th:field="*{telefono}" required
+			    		pattern="^\+?[0-9]{10,11}$"
+			           title="Ingrese un número de teléfono válido (ej: +57 312 1234567 o 3121234567). Debe tener entre 10 a 13 dígitos." 
+			           oninput="this.value = this.value.replace(/[^0-9+\s\-]/g, '');">
+			    <small>Ingrese su número de teléfono (ej: +57 3121234567)</small>
+			</div>
+            <div class="form-group">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" th:field="*{direccion}" required minlength="5"
+                       pattern="^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ\s.,#\-\/\u00B0]+$"
+                       title="La dirección solo debe contener letras, números, espacios y caracteres comunes de dirección (., #, -, /, °)."
+                       oninput="this.value = this.value.replace(/[^A-Za-z0-9ñÑáéíóúÁÉÍÓÚ\s.,#\-\/\u00B0]/g, '');">
+                <small>Ingrese una dirección válida (ej: Calle 12 # 34-56 Sur).</small>
+            </div>
+            <div class="button-container">
+                <button type="submit" class="form-button save-button">continuar</button>
+                <a th:href="@{/viaje/listar}" class="form-button cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('pasajeroForm');
+
+            const numeroDocumentoInput = document.getElementById('numeroDocumento');
+            const errorNumeroDocumento = document.getElementById('error-numeroDocumento');
+
+            const telefonoInput = document.getElementById('telefono');
+            const errorTelefono = document.getElementById('error-telefono');
+
+            function showError(input, message, errorDiv) {
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.style.display = 'block';
+                }
+                input.classList.add('invalid-input');
+                input.classList.remove('valid-input');
+            }
+
+            function hideError(input, errorDiv) {
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                    errorDiv.style.display = 'none';
+                }
+                input.classList.remove('invalid-input');
+                input.classList.add('valid-input');
+            }
+
+            function resetInputState(input, errorDiv) {
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                    errorDiv.style.display = 'none';
+                }
+                input.classList.remove('invalid-input', 'valid-input');
+            }
+
+            function validateNumeroDocumento() {
+                const value = numeroDocumentoInput.value.trim();
+                const minLength = 7;
+                const maxLength = 15;
+                const onlyDigitsPattern = /^[0-9]+$/;
+
+                if (value === '') {
+                    showError(numeroDocumentoInput, 'El número de documento es requerido.', errorNumeroDocumento);
+                    return false;
+                }
+                if (!onlyDigitsPattern.test(value)) {
+                    showError(numeroDocumentoInput, 'El número de documento solo debe contener números.', errorNumeroDocumento);
+                    return false;
+                }
+                if (value.length < minLength || value.length > maxLength) {
+                    showError(numeroDocumentoInput, `Debe tener entre ${minLength} y ${maxLength} dígitos.`, errorNumeroDocumento);
+                    return false;
+                }
+
+                hideError(numeroDocumentoInput, errorNumeroDocumento);
+                return true;
+            }
+
+            function validateTelefono() {
+                const value = telefonoInput.value.trim();
+                const minLength = 10;
+                const maxLength = 15;
+                const phonePattern = /^\+?[0-9\s\-\(\)]{7,15}$/;
+
+                if (value === '') {
+                    showError(telefonoInput, 'El teléfono es requerido.', errorTelefono);
+                    return false;
+                }
+                if (!phonePattern.test(value)) {
+                    showError(telefonoInput, `Formato de teléfono inválido. Debe tener entre ${minLength} y ${maxLength} caracteres y solo puede contener números, +, espacios, guiones y paréntesis.`, errorTelefono);
+                    return false;
+                }
+
+                hideError(telefonoInput, errorTelefono);
+                return true;
+            }
+
+            numeroDocumentoInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 15);
+                validateNumeroDocumento();
+            });
+            numeroDocumentoInput.addEventListener('blur', validateNumeroDocumento);
+            numeroDocumentoInput.addEventListener('focus', function() { resetInputState(this, errorNumeroDocumento); });
+
+            telefonoInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9+\s\-()]/g, '').slice(0, 15);
+                validateTelefono();
+            });
+            telefonoInput.addEventListener('blur', validateTelefono); 
+            telefonoInput.addEventListener('focus', function() { resetInputState(this, errorTelefono); }); // Limpia al enfocar
+
+            form.addEventListener('submit', function(event) {
+                let formIsValid = true;
+
+                if (!validateNumeroDocumento()) {
+                    formIsValid = false;
+                }
+                if (!validateTelefono()) {
+                    formIsValid = false;
+                }
+
+                if (!formIsValid) {
+                    event.preventDefault(); 
+                    alert('Por favor, corrija los errores en el formulario antes de continuar.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

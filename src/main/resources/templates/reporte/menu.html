@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Menú de Reportes</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+	<div th:insert="~{layout/header :: header}"></div>
+
+    <div class="report-options">
+        <h2>Menú de Reportes</h2>
+
+        <div class="report-item">
+            <div class="report-details">
+                <strong>Ventas por Destino</strong>
+                <p>Informe de las ventas totales agrupadas por destino.</p>
+                <div class="report-links">
+                    <a th:href="@{/reporte/ventasPorDestino}" class="report-actions">Ver en Pantalla</a>
+                    <a th:href="@{/reporte/generar-pdf/ventasPorDestino}" class="report-actions pdf-button">Generar PDF</a>
+                    <a th:href="@{/reporte/generar-csv/ventasPorDestino}" class="report-actions csv-button">Generar CSV</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-item">
+            <div class="report-details">
+                <strong>Ventas por Fecha</strong>
+                <p>Informe de las ventas dentro de un rango de fechas específico.</p>
+                <form th:action="@{/reporte/ventaPorFecha}" method="get">
+                    <label for="fechaInicio">Fecha Inicio:</label>
+                    <input type="date" id="fechaInicio" name="fechaInicio">
+                    <label for="fechaFin">Fecha Fin:</label>
+                    <input type="date" id="fechaFin" name="fechaFin">
+                    <button type="submit" class="report-actions">Ver en Pantalla</button>
+                </form>
+                <div th:if="${fechaInicio != null and fechaFin != null}" class="report-links">
+                    <a th:href="@{/reporte/generar-pdf/ventaPorFecha(fechaInicio=${fechaInicio}, fechaFin=${fechaFin})}" class="report-actions pdf-button">Generar PDF</a>
+                    <a th:href="@{/reporte/generar-csv/ventaPorFecha(fechaInicio=${fechaInicio}, fechaFin=${fechaFin})}" class="report-actions csv-button">Generar CSV</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-item">
+            <div class="report-details">
+                <strong>Estadísticas de la Aerolínea</strong>
+                <p>Resumen de las principales estadísticas de la aerolínea.</p>
+                <div class="report-links">
+                    <a th:href="@{/reporte/estadisticas}" class="report-actions">Ver en Pantalla</a>
+                    <a th:href="@{/reporte/generar-pdf/estadisticas}" class="report-actions pdf-button">Generar PDF</a>
+                    <a th:href="@{/reporte/generar-csv/estadisticas}" class="report-actions csv-button">Generar CSV</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

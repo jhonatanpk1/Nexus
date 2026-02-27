@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nexus - Crear Nuevo Viaje</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <style>
+      .form-container {
+    max-width: 1000px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 25px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  /* Línea 1: Número de vuelo, origen y destino */
+  .line-1 {
+    display: flex;
+    gap: 20px;
+  }
+  .line-1 .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Línea 2: Descripción e Itinerario lado a lado */
+  .line-2 {
+    display: flex;
+    gap: 20px;
+  }
+  .line-2 .descripcion-group,
+  .line-2 .itinerario-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .line-2 textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  /* Línea 3: Fecha inicio, fecha fin, duración y cupos disponibles */
+  .line-3 {
+    display: flex;
+    gap: 20px;
+  }
+  .line-3 .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .line-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centrado horizontal */
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  input[type="text"],
+  input[type="date"],
+  input[type="number"],
+  textarea,
+  input[type="file"] {
+    padding: 8px 10px;
+    border: 1.8px solid #cce0ff;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  input[type="text"],
+  input[type="date"],
+  input[type="number"] {
+    min-height: 36px;
+  }
+  textarea {
+    font-family: inherit;
+  }
+  input[type="file"] {
+    padding: 5px 10px;
+  }
+  input:focus,
+  textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 6px rgba(0,123,255,0.5);
+  }
+  .button-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 26px;
+    justify-content: center;
+  }
+  button, .cancel-button {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 10px 22px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    min-width: 140px;
+  }
+    button.save-button {
+    background-color: #007bff;
+    color: white;
+  }
+  button.save-button:hover {
+    background-color: #0056b3;
+  }
+  .cancel-button {
+    background-color: #dc3545;
+    color: white;
+    display: inline-block;
+    line-height: normal;
+    text-decoration: none;
+  }
+  .cancel-button:hover {
+    background-color: #a71d2a;
+  }
+    </style>
+</head>
+<body>
+	<div th:insert="~{layout/header :: header}"></div>
+
+    <main class="form-container"> <h2 th:text="${titulo}">Crear Nuevo Viaje</h2>
+        <form th:action="@{/viaje/save}" method="post" th:object="${viaje}" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{idViaje}" th:if="${viaje.idViaje != null}">
+
+			
+			<div class="line-1">
+				<div class="form-group">
+	                <label for="numeroVuelo">Número de Vuelo:</label>
+	                <input type="text" id="numeroVuelo" th:field="*{numeroVuelo}" class="form-control" required>
+	            </div>
+	            <div class="form-group">
+	                <label for="origen">Origen:</label>
+	                <input type="text" id="origen" th:field="*{origen}" class="form-control" required>
+	            </div>
+	            <div class="form-group">
+	                <label for="destino">Destino:</label>
+	                <input type="text" id="destino" th:field="*{destino}" class="form-control" required>
+	            </div>
+ 			</div>
+ 			
+ 			<div class="line-2">
+	 			<div class="form-group">
+	 				<label for="descripcion">Descripción:</label>
+		            <textarea id="descripcion" th:field="*{descripcion}" class="form-control"></textarea>
+		        </div>
+		        <div class="form-group">
+	                <label for="itinerario">Itinerario:</label>
+	                <textarea id="itinerario" th:field="*{itinerario}" class="form-control"></textarea>
+	            </div>
+ 			</div>
+ 			
+ 			<div class="line-3">
+	            <div class="form-group">
+	                <label for="fechaInicio">Fecha Inicio:</label>
+	                <input type="date" id="fechaInicio" th:field="*{fechaInicio}" class="form-control" required>
+	            </div>
+	            <div class="form-group">
+	                <label for="fechaFin">Fecha Fin:</label>
+	                <input type="date" id="fechaFin" th:field="*{fechaFin}" class="form-control" required>
+	            </div>
+	            <div class="form-group">
+	                <label for="duracionDias">Duración (en días):</label>
+	                <input type="number" id="duracionDias" th:field="*{duracionDias}" class="form-control" readonly>
+	            </div>
+	            
+	            
+			</div>
+			
+			<div class="line-3">
+				<div class="form-group">
+	                <label for="disponibilidad">Cupos disponibles:</label>
+	                <input type="number" id="disponibilidad" th:field="*{disponibilidad}" class="form-control" required>
+	            </div>
+            	<div class="form-group">
+	                <label for="precioAdulto">Precio Adulto:</label>
+	                <input type="text" id="precioAdulto" th:field="*{precioAdulto}" class="form-control" required>
+	            </div>
+	            <div class="form-group">
+	                <label for="precioNino">Precio Niño:</label>
+	                <input type="text" id="precioNino" th:field="*{precioNino}" class="form-control">
+	            </div>
+	        </div>
+
+			<div class="line-4">
+	            <div class="form-group">
+	    			<label for="imagenPrincipal">Imagen Principal:</label>
+	    			<input type="file" id="imagenPrincipal" name="imagenPrincipal" class="form-control">
+				</div>
+			</div>
+
+            <div class="button-container">
+                <button type="submit" class="form-button save-button">Guardar Viaje</button>
+                <a th:href="@{/viaje/listar}" class="form-button cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    
+    <div th:insert="~{layout/footer :: footer}"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaInicioInput = document.getElementById('fechaInicio');
+            const fechaFinInput = document.getElementById('fechaFin');
+            const duracionDiasInput = document.getElementById('duracionDias');
+            const precioAdultoInput = document.getElementById('precioAdulto');
+            const precioNinoInput = document.getElementById('precioNino');
+
+            // Función para calcular la duración en días
+            function calcularDuracionDias() {
+                const fechaInicio = new Date(fechaInicioInput.value);
+                const fechaFin = new Date(fechaFinInput.value);
+
+                // Solo calcular si ambas fechas son válidas
+                if (fechaInicioInput.value && fechaFinInput.value && fechaFin >= fechaInicio) {
+                    const diferenciaTiempo = fechaFin.getTime() - fechaInicio.getTime();
+                    // Convertir milisegundos a días (1 día = 1000ms * 60s * 60min * 24h)
+                    const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+                    duracionDiasInput.value = diferenciaDias;
+                } else {
+                    // Si las fechas no son válidas o fechaFin es anterior a fechaInicio, limpiar el campo
+                    duracionDiasInput.value = '';
+                }
+            }
+
+            // Añadir event listeners para que el cálculo se realice cada vez que las fechas cambien
+            fechaInicioInput.addEventListener('change', calcularDuracionDias);
+            fechaFinInput.addEventListener('change', calcularDuracionDias);
+
+            // Ejecutar el cálculo una vez al cargar la página si ya hay fechas pre-llenadas (para edición)
+            calcularDuracionDias();
+
+            // Tu código de validación de precios existente
+            function validarPrecio(inputElement) {
+                inputElement.addEventListener('input', function() {
+                    const valor = this.value;
+                    const soloNumerosYUnPunto = /^[0-9]*\.?[0-9]*$/;
+
+                    if (!soloNumerosYUnPunto.test(valor)) {
+                        // Eliminar cualquier carácter que no sea número o punto
+                        this.value = valor.replace(/[^0-9.]/g, '');
+
+                        // Asegurar que solo haya un punto
+                        const puntos = this.value.split('.').length - 1;
+                        if (puntos > 1) {
+                            const partes = this.value.split('.');
+                            this.value = partes[0] + '.' + partes.slice(1).join(''); 
+                        }
+                    }
+                });
+            }
+
+            validarPrecio(precioAdultoInput);
+            validarPrecio(precioNinoInput);
+        });
+    </script>
+    </body>
+</html>

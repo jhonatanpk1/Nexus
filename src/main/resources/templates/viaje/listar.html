@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Listado de Viajes</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div th:insert="~{layout/header :: header}"></div>
+
+    <main class="main-content vertical-list" >
+    	<h2>Listado de Viajes Disponibles</h2>
+
+    	<div th:if="${viajes != null and !viajes.isEmpty()}" class="viajes-list" th:fragment="Viaje">
+        	<div th:each="viaje : ${viajes}" class="viaje-item">
+            	<div class="viaje-header">
+                	<h3><span th:text="${viaje.destino}"></span></h3>
+                	<p class="fecha-inicio"><span th:text="${#temporals.format(viaje.fechaInicio, 'dd-MM-yyyy')}"></span> - <span th:text="${#temporals.format(viaje.fechaFin, 'dd-MM-yyyy')}"></span> (<span th:text="${viaje.duracionDias}"></span> días)</p>
+                	<div class="precio-container">
+                    	<span class="precio">COP <span th:text="${#numbers.formatDecimal(viaje.precioAdulto, 0, 'POINT', 0, 'COMMA')}"></span></span>
+                    	<button class="toggle-details">▼ Detalles</button>
+                	</div>
+	            </div>
+	            <div class="viaje-details-expanded" style="display:none;">
+	                <div class="imagen-itinerario">
+	                    <div class="viaje-image">
+	                        <img th:if="${viaje.imagenPrincipal}" th:src="@{/images/viajes/{nombreArchivo}(nombreArchivo=${viaje.imagenPrincipal})}" alt="Imagen del viaje">
+	                        <div th:unless="${viaje.imagenPrincipal}" class="no-image">Sin imagen disponible</div>
+	                    </div>
+	                    <div class="viaje-itinerario">
+			                <strong>Itinerario:</strong>
+			                <div th:text="${viaje.itinerario}" style="display: none;" class="itinerario-original"></div>
+			                <div class="itinerario-formateado"></div>
+			            </div>
+	                </div>
+	                <p class="descripcion"><strong>Descripción:</strong> <span th:text="${viaje.descripcion}"></span></p>
+	                <p class="disponibilidad"><strong>Cupos disponibles:</strong> <span th:text="${viaje.disponibilidad}"></span> cupos restantes</p>
+	                <div class="actions-expanded">
+	                	<a th:href="@{/reserva/comprar/{idViaje}(idViaje=${viaje.idViaje})}" class="comprar-button" style="text-decoration:none;">Comprar Ticket</a>
+	                    <div th:if="${session.usuarioId != null}" class="admin-actions">
+	                        <a th:href="@{/viaje/edit/{id}(id=${viaje.idViaje})}" class="edit-button">Editar</a>
+	                        <a th:href="@{/viaje/delete/{id}(id=${viaje.idViaje})}" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este viaje?')">Eliminar</a>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    <div th:unless="${viajes != null and !viajes.isEmpty()}">
+	        <p class="no-viajes">No hay viajes disponibles en este momento.</p>
+	    </div>
+	</main>
+
+	<script>
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const toggleButtons = document.querySelectorAll('.toggle-details');
+	        toggleButtons.forEach(button => {
+	            button.addEventListener('click', function() {
+	                const details = this.closest('.viaje-item').querySelector('.viaje-details-expanded');
+	                const buttonText = this.textContent;
+	                details.style.display = details.style.display === 'none' ? 'block' : 'none';
+	                this.textContent = buttonText === '▼ Detalles' ? '▲ Ocultar' : '▼ Detalles';
+	
+	                // Formatear el itinerario cuando se expanden los detalles
+	                if (details.style.display === 'block') {
+	                    const viajeItem = this.closest('.viaje-item');
+	                    const itinerarioOriginalDiv = viajeItem.querySelector('.itinerario-original');
+	                    const itinerarioFormateadoDiv = viajeItem.querySelector('.viaje-itinerario');
+	
+	                    if (itinerarioOriginalDiv && itinerarioFormateadoDiv && !itinerarioFormateadoDiv.dataset.formateado) {
+	                        const itinerarioTexto = itinerarioOriginalDiv.textContent;
+	                        const lineas = itinerarioTexto.split('\n'); // Dividimos por saltos de línea
+	                        itinerarioFormateadoDiv.innerHTML = '<strong>Itinerario:</strong>'; // Reiniciamos el contenido
+	
+	                        lineas.forEach(linea => {
+	                            if (linea.trim() !== '') {
+	                                const dia = document.createElement('p');
+	                                dia.textContent = linea.trim(); // Mostramos cada línea tal cual está en el texto original
+	                                itinerarioFormateadoDiv.appendChild(dia);
+	                            }
+	                        });
+	                        itinerarioFormateadoDiv.dataset.formateado = true; // Marca este itinerario como formateado
+	                    }
+	                }
+	            });
+	        });
+	    });
+	</script>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

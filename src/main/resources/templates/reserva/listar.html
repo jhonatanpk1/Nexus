@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{_layout}"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Listado de Reservas</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+	<div th:insert="~{layout/header :: header}"></div>
+	
+    <div layout:fragment="contenido">
+        <main class="report-reservas"> 
+        	<h2 class="text-center mb-4">Listado de Reservas</h2>
+
+            <div th:if="${reservas != null and !reservas.isEmpty()}">
+                <table class="table table-striped table-hover reservas-table"> <thead class="bg-primary text-white">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Tipo</th> 
+                            <th>Destino/Ruta</th> 
+                            <th>Fechas / Horas</th>
+                            <th>Adultos / Niños</th> 
+                            <th>Precio Total</th>
+                            <th>Estado</th> 
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="reserva : ${reservas}">
+                            <td th:text="${reserva.cliente.nombre} + ' ' + ${reserva.cliente.apellido}"></td>
+                            <td>
+                                <span th:if="${reserva.viaje != null}">Viaje</span>
+                                <span th:if="${reserva.vuelo != null}">Vuelo</span>
+                            </td>
+                            <td>
+                                <span th:if="${reserva.viaje != null}" th:text="${reserva.viaje.destino}"></span>
+							    <span th:if="${reserva.vuelo != null}" th:text="${reserva.vuelo.destino}"></span>
+                            </td>
+                            <td>
+                                <span class="value-display" th:text="${#temporals.format(reserva.fechaInicio, 'dd-MM-yyyy')}"></span>
+                                <span class="value-display" th:if="${reserva.fechaFin != null}"> - <span th:text="${#temporals.format(reserva.fechaFin, 'dd-MM-yyyy')}"></span></span>
+                                <span class="value-display" th:if="${reserva.vuelo != null}">
+                                <span th:text="${#temporals.format(reserva.vuelo.fechaSalida, 'HH:mm')}"></span>
+                                </span>
+                            </td>
+                            <td class="value-display" th:text="${reserva.cantidadAdultos} + 'A / ' + ${reserva.cantidadNinos} + 'N'"></td>
+                            <td class="value-display" th:text="${#numbers.formatCurrency(reserva.precioTotal)}"></td>
+                            <td th:text="${reserva.estadoReserva}"></td> <td class="actions">
+                                <a th:href="@{/reserva/ver/{id}(id=${reserva.idReserva})}" class="btn btn-info btn-sm">Ver Detalles</a>
+                                <a th:href="@{/reserva/cancelar/{id}(id=${reserva.idReserva})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">Cancelar</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:unless="${reservas != null and !reservas.isEmpty()}" class="alert alert-info text-center mt-5">
+                <p class="no-reservas">No tienes ninguna reserva activa en este momento.</p>
+                <a th:href="@{/reserva/form}" class="btn btn-success mt-3">Crear Nueva Reserva</a>
+            </div>
+
+            <div class="text-center mt-4">
+                <a th:href="@{/}" class="btn btn-primary btn-lg">Volver al Inicio</a>
+            </div>
+        </main>
+    </div>
+    
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$LAYOUT_TITLE - Inicio de Sesión">Iniciar Sesión</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+	<div class="login">
+		<div class="login-logo-container">
+			<img src="" alt="Logo de Nexus Aerolíneas" th:src="@{/images/Nexus.png}" class="login-logo">
+		</div>
+		<div class="login-container">
+			<h2>Inicio de Sesión Empleado</h2>
+			<form th:action="@{/login}" method="post">
+				<div class="form-group">
+					<label for="username">Usuario:</label>
+					<input type="text" id="username" name="username" required autofocus="autofocus" class="form-control"/>
+				</div>
+				<div class="form-group">
+					<label for="password">Contraseña:</label>
+					<input type="password" id="password" name="password" required class="form-control"/>
+				</div>
+				<button type="submit" class="login-button">Iniciar Sesión</button>
+				<div th:if="${param.error}" class="error-message">
+					Nombre de usuario o contraseña incorrectos.
+				</div>
+				<div th:if="${param.logout}" class="success-message">
+					Has cerrado sesión exitosamente.
+				</div>
+			</form>
+		</div>
+	</div>
+       
+</body>
+</html>

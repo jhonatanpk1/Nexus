@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{_layout}">
+<head>
+    <title th:text="${titulo}"></title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div layout:fragment="contenido">
+        <div class="container my-4">
+            <h2 class="mb-4" th:text="${titulo}">Confirmación de Reserva</h2>
+
+            <div class="alert alert-success" role="alert" th:if="${success}">
+                <p th:text="${success}"></p>
+            </div>
+            <div class="alert alert-danger" role="alert" th:if="${error}">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="my-0 font-weight-normal">Detalles de la Reserva</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>ID de Reserva:</strong> <span th:text="${reserva.idReserva}"></span></li>
+                        <li class="list-group-item"><strong>Fecha de Reserva:</strong> <span th:text="${#temporals.format(reserva.fechaReserva, 'dd/MM/yyyy HH:mm')}"></span></li>
+                        <li class="list-group-item"><strong>Estado:</strong> <span th:text="${reserva.estadoReserva}"></span></li>
+                        <li class="list-group-item"><strong>Adultos:</strong> <span th:text="${reserva.cantidadAdultos}"></span></li>
+                        <li class="list-group-item"><strong>Niños:</strong> <span th:text="${reserva.cantidadNinos}"></span></li>
+                        <li class="list-group-item"><strong>Precio Total:</strong> <span th:text="${#numbers.formatCurrency(reserva.precioTotal)}"></span></li>
+                        <li class="list-group-item"><strong>Fecha de Inicio del Evento:</strong> <span th:text="${#temporals.format(reserva.fechaInicio, 'dd/MM/yyyy')}"></span></li>
+                        <li class="list-group-item" th:if="${reserva.fechaFin != null}"><strong>Fecha de Fin del Evento:</strong> <span th:text="${#temporals.format(reserva.fechaFin, 'dd/MM/yyyy')}"></span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4 class="my-0 font-weight-normal">Información del Cliente</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Nombre Completo:</strong> <span th:text="${reserva.cliente.nombre} + ' ' + ${reserva.cliente.apellido}"></span></li>
+                        <li class="list-group-item"><strong>Documento:</strong> <span th:text="${reserva.cliente.tipoDocumento} + ' ' + ${reserva.cliente.numeroDocumento}"></span></li>
+                        <li class="list-group-item"><strong>Correo:</strong> <span th:text="${reserva.cliente.correoElectronico}"></span></li>
+                        <li class="list-group-item"><strong>Teléfono:</strong> <span th:text="${reserva.cliente.telefono}"></span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div th:if="${viaje != null}" class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="my-0 font-weight-normal">Detalles del Viaje</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Destino:</strong> <span th:text="${viaje.destino}"></span></li>
+                        <li class="list-group-item"><strong>Descripción:</strong> <span th:text="${viaje.descripcion}"></span></li>
+                        <li class="list-group-item"><strong>Fecha de Inicio del Viaje:</strong> <span th:text="${#temporals.format(viaje.fechaInicio, 'dd/MM/yyyy')}"></span></li>
+                        <li class="list-group-item"><strong>Fecha de Fin del Viaje:</strong> <span th:text="${#temporals.format(viaje.fechaFin, 'dd/MM/yyyy')}"></span></li>
+                        <li class="list-group-item"><strong>Precio por Adulto:</strong> <span th:text="${#numbers.formatCurrency(viaje.precioAdulto)}"></span></li>
+                        <li class="list-group-item"><strong>Precio por Niño:</strong> <span th:text="${#numbers.formatCurrency(viaje.precioNino)}"></span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div th:if="${vuelo != null}" class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="my-0 font-weight-normal">Detalles del Vuelo</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Número de Vuelo:</strong> <span th:text="${vuelo.numeroVuelo}"></span></li>
+                        <li class="list-group-item"><strong>Origen:</strong> <span th:text="${vuelo.origen}"></span></li>
+                        <li class="list-group-item"><strong>Destino:</strong> <span th:text="${vuelo.destino}"></span></li>
+                        <li class="list-group-item"><strong>Fecha y Hora de Salida:</strong> <span th:text="${#temporals.format(vuelo.fechaSalida, 'dd/MM/yyyy HH:mm')}"></span></li>
+                        <li class="list-group-item"><strong>Precio por Persona:</strong> <span th:text="${#numbers.formatCurrency(vuelo.precio)}"></span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a th:href="@{/}" class="btn btn-primary btn-lg">Volver al Inicio</a>
+                <a th:href="@{/reserva/listar}" class="btn btn-secondary btn-lg">Ver mis Reservas</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

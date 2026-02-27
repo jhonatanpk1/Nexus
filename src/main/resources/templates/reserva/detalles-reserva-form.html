@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nexus - Detalles de la Reserva</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <main class="form-container">
+        <h2 th:text="${titulo}">Detalles de la Reserva</h2>
+        
+        <p><strong>Pasajero:</strong> <span th:text="${reserva.cliente.nombre} + ' ' + ${reserva.cliente.apellido}"></span></p>
+
+        <div th:if="${viaje != null}">
+            <p><strong>Tipo de Reserva:</strong> Viaje</p>
+            <p><strong>Viaje Seleccionado:</strong> <span th:text="${viaje.destino}"></span> (<span th:text="${#temporals.format(viaje.fechaInicio, 'dd-MM-yyyy')}"></span> - <span th:text="${#temporals.format(viaje.fechaFin, 'dd-MM-yyyy')}"></span>)</p>
+            </div>
+
+        <div th:if="${vuelo != null}">
+            <p><strong>Tipo de Reserva:</strong> Vuelo</p>
+            <p><strong>Vuelo Seleccionado:</strong> <span th:text="${vuelo.numeroVuelo} + ' - ' + ${vuelo.origen} + ' a ' + ${vuelo.destino}"></span> (<span th:text="${#temporals.format(vuelo.fechaSalida, 'dd-MM-yyyy')}"></span> - <span th:text="${#temporals.format(vuelo.horaSalida, 'HH:mm')}"></span>)</p>
+            </div>
+
+        <form th:action="
+            ${viaje != null ? 
+                '/reserva/guardar-detalles/' + viaje.idViaje : 
+                ('/reserva/guardar-detalles/vuelo/' + vuelo.idVuelo)
+            }" 
+            method="post" th:object="${reserva}">
+            
+            <input type="hidden" th:field="*{cliente.idCliente}" > 
+
+            <input type="hidden" name="viajeId" th:if="${viaje != null}" th:value="${viaje.idViaje}" />
+            <input type="hidden" name="vueloId" th:if="${vuelo != null}" th:value="${vuelo.idVuelo}" />
+
+            <div class="form-group">
+                <label for="cantidadAdultos">Cantidad de Adultos:</label>
+                <input type="number" id="cantidadAdultos" th:field="*{cantidadAdultos}"
+                       min="1" max="10" value="1" required
+                       title="Debe ingresar un número de adultos entre 1 y 10.">
+                <div class="error-message" id="error-cantidadAdultos"></div>
+            </div>
+            <div class="form-group">
+                <label for="cantidadNinos">Cantidad de Niños:</label>
+                <input type="number" id="cantidadNinos" th:field="*{cantidadNinos}"
+                       min="0" max="5" value="0" required
+                       title="Debe ingresar un número de niños entre 0 y 5.">
+            <div class="error-message" id="error-cantidadNinos"></div>
+            <div class="button-container">
+                <button type="submit" class="form-button save-button">Continuar al Pago</button>
+                <a th:href="@{/viaje/listar}" class="form-button cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('reservaForm');
+            const cantidadAdultosInput = document.getElementById('cantidadAdultos');
+            const cantidadNinosInput = document.getElementById('cantidadNinos');
+
+            function displayError(inputElement, message) {
+                const errorDivId = `error-${inputElement.id}`;
+                let errorDiv = document.getElementById(errorDivId);
+
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = errorDivId;
+                    errorDiv.className = 'error-message';
+                    inputElement.parentNode.appendChild(errorDiv);
+                }
+
+                errorDiv.textContent = message;
+                errorDiv.style.display = message ? 'block' : 'none';
+
+                if (message) {
+                    inputElement.classList.add('input-error');
+                } else {
+                    inputElement.classList.remove('input-error');
+                }
+            }
+
+            function validateNumberInput(inputElement, minVal, maxVal, fieldName) {
+                let value = parseInt(inputElement.value, 10);
+                let errorMessage = '';
+
+                if (isNaN(value)) {
+                    errorMessage = `${fieldName} es requerido y debe ser un número.`;
+                    value = minVal; 
+                } else if (value < minVal) {
+                    errorMessage = `${fieldName} no puede ser menor que ${minVal}.`;
+                    value = minVal; 
+                } else if (value > maxVal) {
+                    errorMessage = `${fieldName} no puede ser mayor que ${maxVal}.`;
+                    value = maxVal; 
+                }
+                
+                if (parseInt(inputElement.value, 10) !== value) {
+                    inputElement.value = value;
+                }
+
+                displayError(inputElement, errorMessage);
+                return errorMessage === ''; 
+            }
+
+            cantidadAdultosInput.addEventListener('input', function() {
+                validateNumberInput(this, 1, 10, 'Número de Adultos');
+            });
+            cantidadAdultosInput.addEventListener('blur', function() {
+                validateNumberInput(this, 1, 10, 'Número de Adultos');
+            });
+            
+            cantidadAdultosInput.addEventListener('DOMContentLoaded', function() {
+                validateNumberInput(this, 1, 10, 'Número de Adultos');
+            });
+
+
+            cantidadNinosInput.addEventListener('input', function() {
+                validateNumberInput(this, 0, 5, 'Número de Niños');
+            });
+            cantidadNinosInput.addEventListener('blur', function() {
+                validateNumberInput(this, 0, 5, 'Número de Niños');
+            });
+            
+            cantidadNinosInput.addEventListener('DOMContentLoaded', function() {
+                validateNumberInput(this, 0, 5, 'Número de Niños');
+            });
+
+            form.addEventListener('submit', function(event) {
+                const adultosValidos = validateNumberInput(cantidadAdultosInput, 1, 10, 'Número de Adultos');
+                const ninosValidos = validateNumberInput(cantidadNinosInput, 0, 5, 'Número de Niños');
+
+                if (!adultosValidos || !ninosValidos) {
+                    event.preventDefault();
+                    alert('Por favor, corrija los errores en el formulario antes de continuar.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nexus - Listado de Vuelos</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div th:insert="~{layout/header :: header}"></div>
+
+    <main>
+        <div >
+            <h2>Listado de Vuelos</h2>
+            <div th:if="${vuelos != null and !vuelos.isEmpty()}">
+                <table class="viajes-table">
+                    <thead>
+                        <tr>
+                            <th>Número de Vuelo</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Fecha Salida</th>
+                            <th>Hora</th>
+                            <th>Precio</th>
+                            <th th:if="${session.usuarioId != null}" style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vuelo : ${vuelos}" th:fragment="Vuelo">
+                            <td th:text="${vuelo.numeroVuelo}"></td>
+                            <td th:text="${vuelo.origen}"></td>
+                            <td th:text="${vuelo.destino}"></td>
+                            <td th:text="${#temporals.format(vuelo.fechaSalida, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${#temporals.format(vuelo.horaSalida, 'HH:mm')}"></td>
+                            <td th:text="${#numbers.formatDecimal(vuelo.precio, 0, 'POINT', 0, 'COMMA')}"></td>
+                            <td class="actions">
+						        <a th:href="@{/reserva/comprar/vuelo/{idVuelo}(idVuelo=${vuelo.idVuelo})}" class="comprar-button" style="text-decoration:none;">Comprar</a>
+						        <a th:href="@{/vuelo/edit/{id}(id=${vuelo.idVuelo})}" th:if="${session.usuarioId != null}" class="edit-button">Editar</a>
+                                <a th:href="@{/vuelo/delete/{id}(id=${vuelo.idVuelo})}" th:if="${session.usuarioId != null}" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este vuelo?')">Eliminar</a>
+						    </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:unless="${vuelos != null and !vuelos.isEmpty()}">
+                <p class="no-viajes">No hay vuelos registrados.</p>
+            </div>
+
+            <div th:if="${session.usuarioId != null}" class="admin-section">
+                <a th:href="@{/vuelo/form}" class="form-button save-button" style="text-decoration: none;">Crear Nuevo Vuelo</a>
+            </div>
+        </div>
+    </main>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

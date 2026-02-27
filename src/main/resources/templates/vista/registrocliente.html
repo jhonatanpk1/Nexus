@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nexus - Pasajero</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <main class="form-container">
+    	<img th:src="@{/images/Nexus.png}" alt="Ícono de Nuevo Cliente" style="display: block; margin: 0 auto 20px; max-width: 1000px; height: auto;">
+        <h2 th:text="${titulo}"></h2>
+        <form th:action="@{/vista/save}" method="post" th:object="${clientes}">
+            <input type="hidden" th:field="*{idCliente}" th:if="${clientes.idCliente != null}">
+
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" required>
+            </div>
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" th:field="*{apellido}" required>
+            </div>
+            <div class="form-group">
+                <label for="tipoDocumento">Tipo de Documento (RC, TI, CC, TE, CE, NIT, PP, PEP, DIE):</label>
+                <input type="text" id="tipoDocumento" th:field="*{tipoDocumento}" required pattern="^[A-Z]{2,3}$" title="Ingrese las iniciales del tipo de documento en mayúsculas (mínimo 2, máximo 3 letras). No se admiten números." oninput="this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);">
+                <small>Ejemplo: CC</small>
+            </div>
+            <div class="form-group">
+                <label for="numeroDocumento">Número de Documento:</label>
+                <input type="text" id="numeroDocumento" th:field="*{numeroDocumento}" required pattern="^[0-9]{7,}$" title="Ingrese solo números con un mínimo de 7 dígitos." oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                <small>Solo se admiten números (mínimo 7 dígitos).</small>
+            </div>
+            <div class="form-group">
+                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" required>
+            </div>
+            <div class="form-group">
+    			<label for="correoElectronico">Correo Electrónico:</label>
+    			<input type="email" id="correoElectronico" th:field="*{correoElectronico}" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org|edu)$"  title="Ingrese un correo electrónico válido (ej: ejemplo@dominio.com).">
+    			<small>Ejemplo: ejemplo@dominio.com</small>
+			</div>
+            <div class="form-group">
+    			<label for="direccion">Dirección:</label>
+    			<input type="text" id="direccion" th:field="*{direccion}" required minlength="5" title="Ingrese una dirección válida (ej: Calle 12 # 34-56 Sur).">
+    			<small>Ingrese una dirección válida (ej: Calle 12 # 34-56 Sur).</small>
+			</div>
+            <div class="button-container">
+                <button type="submit" class="form-button save-button">Continuar</button>
+                <a th:href="@{/vista/listar}" class="form-button cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

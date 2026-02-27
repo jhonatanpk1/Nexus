@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Gestión de Pilotos</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div th:insert="~{layout/header :: header}"></div>
+
+    <main>
+        <h2>Listado de Pilotos</h2>
+
+        <div class="actions">
+            <a th:href="@{/piloto/crear}" class="add-button">
+                <i class="fas fa-plus-circle"></i> Agregar Nuevo Piloto
+            </a>
+        </div>
+
+        <div th:if="${pilotos != null and !pilotos.isEmpty()}">
+            <table class="nexus-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Vuelo/viaje Asignado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="piloto : ${pilotos}">
+                        <td th:text="${piloto.nombre}"></td>
+                        <td th:text="${piloto.apellido}"></td>
+                        <td th:if="${piloto.vuelo != null}">
+                            <span th:utext="${'Vuelo: ' + piloto.vuelo.numeroVuelo + 
+                                            ' <br>Origen: ' + (piloto.vuelo.origen != null ? piloto.vuelo.origen : 'N/A') + 
+                                            ' <br>Destino: ' + (piloto.vuelo.destino != null ? piloto.vuelo.destino : 'N/A') + 
+                                            ' <br>Fecha: ' + piloto.vuelo.fechaSalida}"></span>
+                        </td>
+                        <td th:unless="${piloto.vuelo != null}" th:if="${piloto.viaje != null}">
+                            <span th:utext="${'Viaje: ' + (piloto.viaje.numeroVuelo != null ? piloto.viaje.numeroVuelo : 'N/A') + 
+                                            ' <br>Origen: ' + (piloto.viaje.origen != null ? piloto.viaje.origen : 'N/A') + 
+                                            ' <br>Destino: ' + (piloto.viaje.destino != null ? piloto.viaje.destino : 'N/A') + 
+                                            ' <br>Fecha: ' + piloto.viaje.fechaInicio}"></span>
+                        </td>
+                        <td th:unless="${piloto.vuelo != null or piloto.viaje != null}">
+                            <span class="no-asignado">Ninguno</span>
+                        </td>
+                        <td class="actions">
+                            <a th:href="@{/piloto/vuelo/{id}(id=${piloto.idPiloto})}" class="view-button" title="Ver Vuelo">
+                                <i class="fas fa-plane"></i>
+                            </a>
+                            <a th:href="@{/piloto/editar/{id}(id=${piloto.idPiloto})}" class="edit-button" title="Editar Piloto">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <a th:href="@{/piloto/eliminar/{id}(id=${piloto.idPiloto})}"
+                               class="delete-button" title="Eliminar Piloto"
+                               onclick="return confirm('¿Estás seguro de eliminar a este piloto?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${pilotos != null and !pilotos.isEmpty()}">
+            <p class="no-usuarios">No hay pilotos registrados.</p>
+        </div>
+
+        <div class="back-link">
+            <a th:href="@{/}" style="text-decoration: none;"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+        </div>
+    </main>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>

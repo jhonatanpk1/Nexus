@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Listado de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+    <div th:insert="~{layout/header :: header}"></div>
+
+    <main>
+        <h2>Listado de Usuarios</h2>
+
+        <div th:if="${usuarios != null and !usuarios.isEmpty()}">
+            <table class="usuarios-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Rol</th>
+                        <th>Fecha de Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.usuario}"></td>
+                        <td th:text="${usuario.nombre != null ? usuario.nombre : '-'}"></td>
+                        <td th:text="${usuario.rol}"></td>
+                        <td th:text="${#temporals.format(usuario.fechaRegistro, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                        <td class="actions">
+                            <a th:href="@{/usuario/edit/{id}(id=${usuario.idUsuario})}" class="edit-button">Editar</a>
+                            <a th:href="@{/usuario/delete/{id}(id=${usuario.idUsuario})}" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${usuarios != null and !usuarios.isEmpty()}">
+            <p class="no-usuarios">No hay usuarios registrados.</p>
+        </div>
+        <a th:href="@{/usuario/form}" class="add-usuario-link">Crear Nuevo Usuario</a>
+    </main>
+
+    <div th:insert="~{layout/footer :: footer}"></div>
+</body>
+</html>
