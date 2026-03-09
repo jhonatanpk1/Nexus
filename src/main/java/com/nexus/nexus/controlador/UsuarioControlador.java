@@ -72,4 +72,10 @@ public class UsuarioControlador {
         usuarioServicio.eliminar(id);
         return "redirect:/usuario/listar";
     }
+    
+    @PostMapping("/logout")
+    public String logout(jakarta.servlet.http.HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
 }

@@ -23,7 +23,6 @@
                     </a>
                 </li>
                 <li th:if="${session.usuarioId != null}"><a th:href="@{/vista/listar}">Gestionar Clientes</a></li>
-                <li th:if="${session.usuarioId != null}"><a th:href="@{/piloto/listar}">Gestionar Pilotos</a></li>
                 <li th:if="${session.usuarioId != null}"><a th:href="@{/reporte/menu}">Reportes</a></li>
                 <li th:if="${session.usuarioId != null}"><a th:href="@{/reserva/listar}">Gestionar Reservas</a></li>
                 <li th:if="${session.usuarioId != null}"><a th:href="@{/usuario/listar}">Gestionar Usuarios</a></li>

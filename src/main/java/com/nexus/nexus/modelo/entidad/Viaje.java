@@ -56,10 +56,16 @@ public class Viaje {
     @Column(name = "imagen_principal", length = 255)
     private String imagenPrincipal;
 
-    @Column(name = "fecha_creacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "fecha_creacion", 
+            insertable = false, 
+            updatable = false, 
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaCreacion;
-
-    @Column(name = "fecha_actualizacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    
+    @Column(name = "fecha_actualizacion", 
+            insertable = false, 
+            updatable = false, 
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime fechaActualizacion;
 
     // Constructor

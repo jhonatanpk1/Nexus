@@ -36,7 +36,7 @@ public class Reserva {
     @JoinColumn(name = "id_vuelo", nullable = true)
     private Vuelo vuelo;
 
-    @Column(name = "fecha_reserva")
+    @Column(name = "fecha_reserva", insertable = false, updatable = false)
     private LocalDateTime fechaReserva;
 
     @Column(name = "fecha_inicio", nullable = false)
